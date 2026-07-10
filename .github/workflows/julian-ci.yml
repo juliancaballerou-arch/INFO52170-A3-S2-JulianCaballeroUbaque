@@ -31,7 +31,7 @@ jobs:
       # This helps maintain clean and consistent Python code.
       - name: Run flake8
         run: |
-          python -m flake8 app.py test_app.py
+          python -m flake8 calculator.py test_calculator.py
 
       # Runs all unit tests in the repository.
       # This verifies that the application behaves as expected after every push.
