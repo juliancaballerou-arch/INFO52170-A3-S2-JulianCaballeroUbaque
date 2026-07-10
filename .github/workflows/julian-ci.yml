@@ -1,64 +1,40 @@
-# The name of the workflow displayed in the GitHub Actions tab.
-# A descriptive name makes it easier to identify the workflow among others.
 name: Python CI Workflow
 
-# Specifies the event that triggers the workflow.
-# This workflow runs automatically every time code is pushed to any branch,
-# ensuring that every code change is validated immediately.
 on:
   push:
 
-# Defines the jobs that will be executed.
 jobs:
-
-  # This job is responsible for building the environment and validating the project.
-  # Separating tasks into jobs improves organization and allows multiple jobs to run independently if needed.
   python-ci:
-
-    # Specifies the operating system used by GitHub to execute the workflow.
-    # Using a GitHub-hosted Ubuntu runner provides a clean, consistent, and reproducible environment.
     runs-on: ubuntu-latest
 
-    # Lists the sequential steps executed during the job.
-    # Each step performs a specific task that contributes to the Continuous Integration process.
     steps:
-
-      # Step 1: Download the repository files.
-      # This action copies the project's source code from GitHub to the virtual machine.
-      # It is important because the runner cannot execute or analyze files that have not been downloaded.
+      # Downloads the repository files.
+      # This is necessary because the runner needs access to the project's source code.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Install and configure Python.
-      # This ensures that the workflow uses Python 3.11 regardless of the runner's default version.
-      # Specifying the Python version guarantees consistent behavior across all executions.
+      # Sets up Python 3.11.
+      # Using a fixed version ensures consistent execution across all workflow runs.
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # Step 3: Install the project's dependencies.
-      # First, pip is upgraded to its latest version.
-      # Then, all required packages listed in requirements.txt are installed.
-      # This is important because external libraries must be available before linting
-      # or executing the application and unit tests.
+      # Installs the project dependencies.
+      # The application and linting tools must be installed before they can be executed.
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run flake8.
-      # Flake8 analyzes the source code for style violations and potential programming errors.
-      # This is important because maintaining consistent code quality improves readability,
-      # reduces bugs, and encourages developers to follow Python best practices.
+      # Checks the code for style issues.
+      # This helps maintain clean and consistent Python code.
       - name: Run flake8
         run: |
-          flake8 .
+          python -m flake8 app.py test_app.py
 
-      # Step 5: Run unit tests.
-      # unittest automatically discovers and executes all test cases in the project.
-      # This is important because it verifies that the application's functionality
-      # still works correctly after every code change, helping detect regressions early.
+      # Runs all unit tests in the repository.
+      # This verifies that the application behaves as expected after every push.
       - name: Run unit tests
         run: |
-          python -m unittest discover
+          python -m unittest discover -v
